@@ -1,0 +1,155 @@
+/* Attendance Container */
+.attendance-container {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.15); /* Transparent glass */
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  font-family: "Segoe UI", sans-serif;
+  color: #fff; /* White text */
+}
+
+.attendance-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  padding: 16px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.card h3 {
+  margin-top: 8px;
+  font-size: 20px;
+}
+
+.card.present { background: linear-gradient(135deg, rgba(40,167,69,0.9), rgba(33,136,56,0.9)); }
+.card.absent { background: linear-gradient(135deg, rgba(220,53,69,0.9), rgba(167,29,42,0.9)); }
+.card.hours { background: linear-gradient(135deg, rgba(0,123,255,0.9), rgba(0,86,179,0.9)); }
+.card.late { background: linear-gradient(135deg, rgba(255,193,7,0.9), rgba(224,168,0,0.9)); }
+
+/* Status Box - Centered Buttons */
+.status-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.status-box p {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+  color: #fff;
+}
+
+.status-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.status-actions button {
+  padding: 10px 20px;
+  border: none;
+  background: rgba(0,123,255,0.9);
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.status-actions button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.status-actions button:disabled {
+  background: rgba(255,255,255,0.3);
+  cursor: not-allowed;
+}
+
+/* Glassy Table */
+.attendance-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  color: #fff;
+}
+
+.attendance-table th {
+  background: linear-gradient(135deg, rgba(0,123,255,0.9), rgba(0,86,179,0.9));
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 18px;
+  text-align: center;
+}
+
+.attendance-table td {
+  padding: 14px 18px;
+  text-align: center;
+  font-size: 15px;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
+.attendance-table tr:nth-child(even) {
+  background: rgba(255,255,255,0.1);
+}
+
+.attendance-table tr:hover {
+  background: rgba(0,123,255,0.2);
+  transition: background 0.2s ease;
+}
+
+/* Status Badges */
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+.badge.present { background: rgba(40,167,69,0.9); }
+.badge.absent { background: rgba(220,53,69,0.9); }
+.badge.late { background: rgba(255,193,7,0.9); color: #222; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .attendance-table th, .attendance-table td {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
