@@ -25,6 +25,16 @@ export default function Sidebar({ active, setActive, onLogout, role = "Employee"
           📊 Dashboard
         </button>
 
+        {/* PROBATION SECTION - Added for Employee Settling In phase */}
+        {!isAdmin && (
+          <button 
+            className={active === "probation" ? "active" : ""} 
+            onClick={() => setActive("probation")}
+          >
+            🌱 Probation
+          </button>
+        )}
+
         {isAdmin && (
           <button 
             className={active === "employees" ? "active" : ""} 
@@ -53,6 +63,14 @@ export default function Sidebar({ active, setActive, onLogout, role = "Employee"
           onClick={() => setActive("payroll")}
         >
           💰 Payroll
+        </button>
+
+        {/* PERFORMANCE SECTION - Logic added based on workflow growth & development */}
+        <button 
+          className={active === "performance" ? "active" : ""} 
+          onClick={() => setActive("performance")}
+        >
+          📈 {isAdmin ? "Performance Appraisal" : "Performance Self-review"}
         </button>
       </div>
 

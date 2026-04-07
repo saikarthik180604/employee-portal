@@ -22,14 +22,21 @@ export default function AdminDashboard({
   const [loading, setLoading] = useState(true);
 
   const [leaves, setLeaves] = useState([]);
-  // Fixed: Removed 'leaveLoading' variable since it was unused and causing build errors
   const [, setLeaveLoading] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
   const [currentEditId, setCurrentEditId] = useState(null);
 
-  const [configDept, setConfigDept] = useState("");
-  const [configSalary, setConfigSalary] = useState("");
+  // --- New State for Probation & Performance ---
+  const [performances, setPerformances] = useState([]);
+  const [perfData, setPerfData] = useState({
+    employeeId: "",
+    rating: 5,
+    comments: "",
+    achievements: "",
+    goals_next_period: "",
+    self_comments: ""
+  });
 
   const employees = propEmployees ?? localEmployees;
   const setEmployees = propSetEmployees ?? setLocalEmployees;
@@ -42,7 +49,7 @@ export default function AdminDashboard({
   const [formData, setFormData] = useState({
     firstName: "", middleName: "", lastName: "", email: "",
     employeeId: "", department: "", designation: "",
-    phone: "", joiningDate: "", status: "Active",
+    phone: "", joiningDate: "", dateOfBirth: "", gender: "", status: "Active",
     base_salary: "", address: "",
     bankName: "", bankAccount: "", ifscCode: "", 
     panNo: "", adharNumber: "",
@@ -77,6 +84,8 @@ export default function AdminDashboard({
           designation: emp.designation || 'Not assigned',
           phone: emp.phone || 'Not provided',
           joiningDate: emp.joining_date || emp.join_date,
+          dateOfBirth: emp.date_of_birth || '',
+          gender: emp.gender || '',
           status: emp.status || 'Active',
           base_salary: emp.base_salary || 0,
           bankName: emp.bank_name || '',
@@ -118,12 +127,23 @@ export default function AdminDashboard({
     } catch (err) { console.error(err.message); } finally { setLeaveLoading(false); }
   }, []);
 
+  const fetchPerformance = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("performance_reviews")
+        .select(`*, employees(first_name, last_name, department)`)
+        .order('review_date', { ascending: false });
+      if (error) throw error;
+      setPerformances(data || []);
+    } catch (err) { console.error(err.message); }
+  }, []);
+
   useEffect(() => {
     if (!initialFetchDone.current) {
       initialFetchDone.current = true;
-      fetchEmployees(); fetchTasks(); fetchLeaves();
+      fetchEmployees(); fetchTasks(); fetchLeaves(); fetchPerformance();
     }
-  }, [fetchEmployees, fetchTasks, fetchLeaves]);
+  }, [fetchEmployees, fetchTasks, fetchLeaves, fetchPerformance]);
 
   // --- HANDLERS ---
 
@@ -151,7 +171,7 @@ export default function AdminDashboard({
     setFormData({
       firstName: "", middleName: "", lastName: "", email: "",
       employeeId: "", department: "", designation: "",
-      phone: "", joiningDate: "", status: "Active", base_salary: "",
+      phone: "", joiningDate: "", dateOfBirth: "", gender: "", status: "Active", base_salary: "",
       bankName: "", bankAccount: "", ifscCode: "", panNo: "", adharNumber: "",
       emergencyContact: "", relation: "", docUrl: ""
     });
@@ -179,6 +199,8 @@ export default function AdminDashboard({
         designation: formData.designation, 
         phone: formData.phone, 
         joining_date: formData.joiningDate,
+        date_of_birth: formData.dateOfBirth,
+        gender: formData.gender,
         status: formData.status, 
         base_salary: formData.base_salary,
         bank_name: formData.bankName,
@@ -186,7 +208,7 @@ export default function AdminDashboard({
         ifsc_code: formData.ifscCode,
         pan_no: formData.panNo,
         adhar_number: formData.adharNumber,
-        emergency_contact: formData.emergencyContact, 
+        emergency_contact: formData.emergency_contact, 
         relation: formData.relation, 
         doc_url: finalDocUrl 
       }]);
@@ -215,6 +237,8 @@ export default function AdminDashboard({
         department: formData.department,
         designation: formData.designation, 
         phone: formData.phone, 
+        date_of_birth: formData.dateOfBirth,
+        gender: formData.gender,
         status: formData.status,
         base_salary: formData.base_salary, 
         bank_name: formData.bankName,
@@ -276,16 +300,36 @@ export default function AdminDashboard({
     }
   };
 
-  const saveSalaryConfig = async () => {
-    if (!configDept || !configSalary) return alert("Please select department and enter amount");
+  // --- Performance Handlers ---
+  const submitPerformanceReview = async () => {
+    if (!perfData.employeeId || !perfData.comments) return alert("Complete all required review fields");
     try {
-      const { error } = await supabase
-        .from("salary_configs")
-        .upsert({ department: configDept, base_salary: configSalary }, { onConflict: 'department' });
+      const { error } = await supabase.from("performance_reviews").insert([{
+        employee_id: perfData.employeeId,
+        rating: perfData.rating,
+        comments: perfData.comments,
+        achievements: perfData.achievements,
+        goals_next_period: perfData.goals_next_period,
+        review_date: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }]);
       if (error) throw error;
-      alert(`Salary configuration for ${configDept} saved!`);
-      setConfigDept(""); setConfigSalary("");
+      alert("Performance review recorded!");
+      setPerfData({ employeeId: "", rating: 5, comments: "", achievements: "", goals_next_period: "" });
+      fetchPerformance();
     } catch (err) { alert(err.message); }
+  };
+
+  const getProbationStatus = (joiningDate) => {
+    if (!joiningDate) return "N/A";
+    const join = new Date(joiningDate);
+    const now = new Date();
+    const diffDays = Math.floor((now - join) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 30) return `${diffDays} Days (Phase 1)`;
+    if (diffDays < 60) return `${diffDays} Days (30-Day Checkpoint)`;
+    if (diffDays < 90) return `${diffDays} Days (60-Day Checkpoint)`;
+    return "Probation Completed";
   };
 
   return (
@@ -300,11 +344,12 @@ export default function AdminDashboard({
           <li className={activeTab === "dashboard" ? "active" : ""} onClick={() => setActiveTab("dashboard")}>Dashboard</li>
           <li className={activeTab === "addEmployee" ? "active" : ""} onClick={() => { setActiveTab("addEmployee"); resetForm(); }}>Add Employee</li>
           <li className={activeTab === "employeeList" ? "active" : ""} onClick={() => setActiveTab("employeeList")}>Employee List</li>
+          <li className={activeTab === "probation" ? "active" : ""} onClick={() => setActiveTab("probation")}>Probation Monitoring</li>
           <li className={activeTab === "tasks" ? "active" : ""} onClick={() => setActiveTab("tasks")}>Tasks</li>
-          <li className={activeTab === "attendance" ? "active" : ""} onClick={() => setActiveTab("attendance")}>Sign-In Monitor</li>
+          <li className={activeTab === "attendance" ? "active" : ""} onClick={() => setActiveTab("attendance")}>Attendance</li>
           <li className={activeTab === "leaves" ? "active" : ""} onClick={() => setActiveTab("leaves")}>Leave Requests</li>
+          <li className={activeTab === "performance" ? "active" : ""} onClick={() => setActiveTab("performance")}>Performance Appraisal</li>
           <li className={activeTab === "payroll" ? "active" : ""} onClick={() => setActiveTab("payroll")}>Payroll Management</li>
-          <li className={activeTab === "salaryConfig" ? "active" : ""} onClick={() => setActiveTab("salaryConfig")}>Salary Settings</li>
         </ul>
         <button className="logout-btn" onClick={onLogout}>Logout</button>
       </div>
@@ -331,9 +376,10 @@ export default function AdminDashboard({
                 <div className="dashboard-wrapper">
                   <h2 className="dashboard-title">Operational Overview</h2>
                   <div className="dashboard-stats">
-                    <div className="stat-box blue"><div className="stat-icon">👥</div><span>Total Workforce</span><h3>{employees.length}</h3></div>
+                    <div className="stat-box blue"><div className="stat-icon">👥</div><span>Total Employee</span><h3>{employees.length}</h3></div>
                     <div className="stat-box purple"><div className="stat-icon">📝</div><span>Active Tasks</span><h3>{tasks.length}</h3></div>
                     <div className="stat-box green"><div className="stat-icon">✉️</div><span>Pending Leaves</span><h3>{leaves.filter(l => l.status === "Pending").length}</h3></div>
+                    <div className="stat-box orange"><div className="stat-icon">⭐</div><span>Avg. Performance</span><h3>4.8/5</h3></div>
                   </div>
                 </div>
               )}
@@ -354,14 +400,28 @@ export default function AdminDashboard({
                   </div>
 
                   <div className="grid-2">
-                    <input name="department" placeholder="Department" value={formData.department} onChange={handleChange} />
-                    <input name="designation" placeholder="Designation" value={formData.designation} onChange={handleChange} />
+                    <label style={{ width: '100%', display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>Date of Birth</label>
+                    <input name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleChange} />
                   </div>
 
-                  <div className="grid-3">
+                  <div className="grid-2">
+                    <label style={{ width: '100%', display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>Date of Joining</label>
+                    <input name="joiningDate" type="date" value={formData.joiningDate} onChange={handleChange} title="Joining Date" />
+                  </div>
+
+                  <div className="grid-2">
+                    <select name="gender" value={formData.gender} onChange={handleChange}>
+                      <option value="">Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <input name="department" placeholder="Department" value={formData.department} onChange={handleChange} />
+                  </div>
+
+                  <div className="grid-2">
+                    <input name="designation" placeholder="Designation" value={formData.designation} onChange={handleChange} />
                     <input name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} />
-                    <input name="adharNumber" placeholder="Aadhar Number" value={formData.adharNumber} onChange={handleChange} />
-                    <input name="panNo" placeholder="PAN Number" value={formData.panNo} onChange={handleChange} />
                   </div>
 
                   <div className="grid-3">
@@ -442,6 +502,101 @@ export default function AdminDashboard({
                       ))}
                     </tbody>
                   </table>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "probation" && (
+                <div className="table-card">
+                  <h2>Probation Monitoring (30-60-90 Day Reviews)</h2>
+                  <div className="table-wrapper">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Employee</th>
+                          <th>Joined On</th>
+                          <th>Days in Service</th>
+                          <th>Probation Status</th>
+                          <th>Next Milestone</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {employees.map(emp => (
+                          <tr key={emp.id}>
+                            <td><strong>{emp.fullName}</strong></td>
+                            <td>{emp.joiningDate || "N/A"}</td>
+                            <td>{getProbationStatus(emp.joiningDate)}</td>
+                            <td>
+                              <span className={`status-badge ${getProbationStatus(emp.joiningDate).includes('Completed') ? 'active' : 'pending'}`}>
+                                {getProbationStatus(emp.joiningDate).includes('Completed') ? 'Permanent' : 'On Probation'}
+                              </span>
+                            </td>
+                            <td>
+                              {getProbationStatus(emp.joiningDate).includes('30') && "60-Day Feedback"}
+                              {getProbationStatus(emp.joiningDate).includes('60') && "90-Day Final Appraisal"}
+                              {getProbationStatus(emp.joiningDate).includes('Phase 1') && "30-Day Check-in"}
+                              {getProbationStatus(emp.joiningDate).includes('Completed') && "Regular Appraisal Cycle"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "performance" && (
+                <div className="performance-section">
+                  <div className="professional-form table-card">
+                    <h2>Performance Appraisal Form</h2>
+                    <div className="grid-2">
+                      <select value={perfData.employeeId} onChange={(e) => setPerfData({...perfData, employeeId: e.target.value})}>
+                        <option value="">Select Employee to Rate</option>
+                        {employees.map(e => <option key={e.id} value={e.id}>{e.fullName}</option>)}
+                      </select>
+                      <select value={perfData.rating} onChange={(e) => setPerfData({...perfData, rating: e.target.value})}>
+                        {[1,2,3,4,5].map(v => <option key={v} value={v}>{v} Stars</option>)}
+                      </select>
+                    </div>
+                    <div className="grid-2" style={{marginTop: '15px'}}>
+                      <textarea placeholder="Key Achievements" value={perfData.achievements} onChange={(e) => setPerfData({...perfData, achievements: e.target.value})} />
+                      <textarea placeholder="Goals for Next Period" value={perfData.goals_next_period} onChange={(e) => setPerfData({...perfData, goals_next_period: e.target.value})} />
+                    </div>
+                    <textarea 
+                      placeholder="Manager Feedback & Comments" 
+                      style={{marginTop: '15px', width: '100%', height: '100px'}} 
+                      value={perfData.comments} 
+                      onChange={(e) => setPerfData({...perfData, comments: e.target.value})} 
+                    />
+                    <button className="primary-btn" style={{marginTop: '15px'}} onClick={submitPerformanceReview}>Submit Performance Appraisal</button>
+                  </div>
+
+                  <div className="table-card" style={{marginTop: '30px'}}>
+                    <h2>Recent Evaluation History</h2>
+                    <div className="table-wrapper">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Employee</th>
+                            <th>Rating</th>
+                            <th>Comments</th>
+                            <th>Achievements</th>
+                            <th>Review Date</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {performances.map(p => (
+                            <tr key={p.id}>
+                              <td>{p.employees?.first_name} {p.employees?.last_name}</td>
+                              <td><span style={{color: '#00d2ff', fontWeight: 'bold'}}>★ {p.rating}/5</span></td>
+                              <td style={{fontSize: '12px', maxWidth: '200px'}}>{p.comments}</td>
+                              <td style={{fontSize: '12px'}}>{p.achievements || "--"}</td>
+                              <td>{new Date(p.review_date).toLocaleDateString()}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}
@@ -559,19 +714,6 @@ export default function AdminDashboard({
                 </div>
               )}
 
-              {activeTab === "salaryConfig" && (
-                <div className="table-card">
-                  <h2>Salary Rules</h2>
-                  <div className="professional-form">
-                    <select value={configDept} onChange={(e) => setConfigDept(e.target.value)}>
-                      <option value="">Department</option>
-                      <option value="IT">IT</option><option value="HR">HR</option>
-                    </select>
-                    <input type="number" placeholder="Base Salary" value={configSalary} onChange={(e) => setConfigSalary(e.target.value)} />
-                    <button className="primary-btn" onClick={saveSalaryConfig}>Update</button>
-                  </div>
-                </div>
-              )}
             </React.Fragment>
           )}
         </div>

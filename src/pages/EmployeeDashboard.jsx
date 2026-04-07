@@ -3,9 +3,15 @@ import { supabase } from "../supabase";
 import Sidebar from "./sidebar";
 import Topbar from "./Topbar";
 import Attendance from "./Attendance"; 
-import Payroll from "./Payroll";      
+import Payroll from "./Payroll";
+import Probation from "./Probation"; 
+import PerformanceSelfReview from "./PerformanceSelfReview"; 
 import "./employee.css";
 
+/**
+ * EmployeeDashboard updated to match HR workflow
+ * Features: Probation monitoring, Performance self-review, and Attendance logs.
+ */
 export default function EmployeeDashboard({ user, onLogout }) {
   const [active, setActive] = useState("dashboard");
   const [tasks, setTasks] = useState([]);
@@ -22,7 +28,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
   const [editFormData, setEditFormData] = useState({
     aadhar: "",
     pan_number: "", 
-    bank_name: "", // Added Bank Name
+    bank_name: "", 
     bank_account_no: "",
     ifsc_code: "",
     mobile: "",
@@ -66,11 +72,10 @@ export default function EmployeeDashboard({ user, onLogout }) {
 
       setDbUser(empData); 
       
-      // Mapping DB columns to Form State
       setEditFormData({
         aadhar: empData.adhar_number || "", 
-        pan_number: empData.pan_no || "", // Matches 'pan_no' in your DB
-        bank_name: empData.bank_name || "", // Matches 'bank_name' in your DB
+        pan_number: empData.pan_no || "", 
+        bank_name: empData.bank_name || "", 
         bank_account_no: empData.bank_account || "", 
         ifsc_code: empData.ifsc_code || "",
         mobile: empData.phone || "", 
@@ -78,10 +83,11 @@ export default function EmployeeDashboard({ user, onLogout }) {
         designation: empData.designation || "",
         emergency_contact_name: empData.relation || "", 
         emergency_contact_phone: empData.emergency_contact || "", 
-        id_document_url: empData.doc_url || "", // Matches 'doc_url' in your DB
+        id_document_url: empData.doc_url || "", 
         newPassword: ""
       });
 
+      // Daily Operations: Task logs
       const { data: taskData } = await supabase
         .from("tasks")
         .select("*")
@@ -113,6 +119,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
   };
 
   const fetchLeaveStats = async (empId) => {
+    // Leave Management workflow
     const { data } = await supabase
       .from("leaves")
       .select("start_date, end_date")
@@ -135,7 +142,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
 
   useEffect(() => { initializeDashboard(); }, [initializeDashboard]);
 
-  /* ================= FILE UPLOAD (ID DOCUMENTS) ================= */
+  /* ================= FILE UPLOAD ================= */
   const handleIdDocumentUpload = async (e) => {
     try {
       const file = e.target.files[0];
@@ -183,8 +190,8 @@ export default function EmployeeDashboard({ user, onLogout }) {
         .from("employees")
         .update({
           adhar_number: editFormData.aadhar,
-          pan_no: editFormData.pan_number, // Corrected column name
-          bank_name: editFormData.bank_name, // Added field
+          pan_no: editFormData.pan_number,
+          bank_name: editFormData.bank_name,
           bank_account: editFormData.bank_account_no,
           ifsc_code: editFormData.ifsc_code,
           phone: editFormData.mobile, 
@@ -192,7 +199,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
           designation: editFormData.designation,
           relation: editFormData.emergency_contact_name,
           emergency_contact: editFormData.emergency_contact_phone,
-          doc_url: editFormData.id_document_url // Corrected column name
+          doc_url: editFormData.id_document_url
         })
         .eq("id", dbUser.id);
 
@@ -292,7 +299,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
 
         <div className="content" style={{ padding: '30px' }}>
           
-          {/* DASHBOARD TAB */}
+          {/* DASHBOARD TAB - Settle In & Daily Ops */}
           {active === "dashboard" && (
             <div className="dashboard-wrapper animate-in">
               <h2 className="dashboard-title" style={{color: 'white', marginBottom: '25px'}}>Welcome Back, {dbUser?.first_name} 👋</h2>
@@ -320,6 +327,16 @@ export default function EmployeeDashboard({ user, onLogout }) {
             </div>
           )}
 
+          {/* PROBATION TAB - Settle In: check-ins & reviews */}
+          {active === "probation" && <Probation session={{ user: dbUser }} />}
+
+          {/* PERFORMANCE TAB - Growth & Development: Self-assess */}
+          {active === "performance" && (
+            <div className="animate-in">
+               <PerformanceSelfReview session={{ user: dbUser }} />
+            </div>
+          )}
+
           {/* NOTIFICATIONS TAB */}
           {active === "notifications" && (
             <div className="notification-section animate-in">
@@ -339,7 +356,7 @@ export default function EmployeeDashboard({ user, onLogout }) {
             </div>
           )}
 
-          {/* TASKS TAB */}
+          {/* TASKS TAB - Daily Operations: Logs */}
           {active === "tasks" && (
             <div className="task-section animate-in">
               <h2 className="dashboard-title" style={{color: 'white', marginBottom: '20px'}}>Assigned Deliverables</h2>
@@ -413,11 +430,11 @@ export default function EmployeeDashboard({ user, onLogout }) {
             </div>
           )}
 
-          {/* ATTENDANCE & PAYROLL */}
+          {/* ATTENDANCE & PAYROLL - Monitoring & Regularize */}
           {active === "attendance" && <Attendance user={dbUser} />}
           {active === "payroll" && <Payroll user={dbUser} />}
 
-          {/* PROFILE TAB */}
+          {/* PROFILE TAB - Verification workflow */}
           {active === "profile" && (
             <div className="profile-container animate-in">
               <div className="glass-card profile-header" style={{display:'flex', alignItems:'center', gap:'25px', padding:'30px', marginBottom:'25px', background: 'rgba(255,255,255,0.05)', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)'}}>
@@ -528,18 +545,6 @@ export default function EmployeeDashboard({ user, onLogout }) {
                                 {isEditing ? <input className="input-field" value={editFormData.emergency_contact_phone} onChange={e => setEditFormData({...editFormData, emergency_contact_phone: e.target.value})} style={{width: '100%', background: '#000', color: 'white', border: '1px solid #333', padding: '8px'}} /> : <p style={{color: 'white', fontSize: '14px'}}>{dbUser?.emergency_contact || "N/A"}</p>}
                             </div>
                         </div>
-                    </div>
-
-                    <div style={{marginTop: '25px', padding: '20px', background: 'linear-gradient(to right, rgba(56, 189, 248, 0.05), transparent)', borderRadius: '10px', border: '1px solid rgba(56, 189, 248, 0.1)'}}>
-                        <h4 style={{margin: '0 0 10px 0', fontSize: '14px', color: '#38bdf8'}}>Security Settings</h4>
-                        <input 
-                            type="password" 
-                            placeholder="Enter New Password" 
-                            className="input-field" 
-                            value={editFormData.newPassword}
-                            onChange={e => setEditFormData({...editFormData, newPassword: e.target.value})}
-                            style={{width: '100%', background: '#000', color: 'white', border: '1px solid #333', padding: '12px', borderRadius: '6px'}}
-                        />
                     </div>
                   </div>
               </div>
