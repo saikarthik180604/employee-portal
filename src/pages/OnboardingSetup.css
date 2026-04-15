@@ -1,0 +1,120 @@
+/* Container */
+.ob-container {
+  padding: 30px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: #e2e8f0;
+  font-family: "Inter", sans-serif;
+}
+
+/* Header */
+.ob-header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  background: linear-gradient(to right, #8b5cf6, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ob-header p {
+  color: #94a3b8;
+  margin-top: 5px;
+}
+
+/* Grid */
+.ob-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 25px;
+}
+
+/* Card */
+.ob-card {
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  transition: 0.3s;
+}
+
+.ob-card:hover {
+  transform: translateY(-4px);
+  border-color: #8b5cf6;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.25);
+}
+
+/* Top */
+.ob-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ob-top h3 {
+  margin: 0;
+}
+
+.ob-top p {
+  margin-top: 5px;
+  color: #94a3b8;
+}
+
+/* Badge */
+.ob-badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.ob-badge.offered {
+  background: #6366f1;
+}
+
+.ob-badge.onboarded {
+  background: #16a34a;
+}
+
+/* Details */
+.ob-details {
+  margin-top: 15px;
+  display: grid;
+  gap: 6px;
+  color: #cbd5e1;
+}
+
+/* Button */
+.ob-btn {
+  margin-top: 18px;
+  padding: 12px;
+  width: 100%;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.ob-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+/* Empty */
+.ob-empty {
+  padding: 25px;
+  background: #111827;
+  border-radius: 12px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+/* Loading */
+.ob-loading {
+  padding: 30px;
+  color: white;
+}

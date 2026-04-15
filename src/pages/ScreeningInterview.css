@@ -1,0 +1,141 @@
+/* Container */
+.si-container {
+  padding: 30px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: #e2e8f0;
+  font-family: "Inter", sans-serif;
+}
+
+/* Header */
+.si-header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  background: linear-gradient(to right, #38bdf8, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.si-header p {
+  color: #94a3b8;
+  margin-top: 5px;
+}
+
+/* Grid */
+.si-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 25px;
+}
+
+/* Card */
+.si-card {
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  transition: 0.3s;
+}
+
+.si-card:hover {
+  transform: translateY(-4px);
+  border-color: #38bdf8;
+  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+}
+
+/* Top */
+.si-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.si-top h3 {
+  margin: 0;
+}
+
+.si-top p {
+  margin-top: 5px;
+  color: #94a3b8;
+}
+
+/* Badge */
+.si-badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #2563eb;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Details */
+.si-details {
+  margin-top: 15px;
+  display: grid;
+  gap: 6px;
+  color: #cbd5e1;
+}
+
+/* Actions */
+.si-actions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Buttons */
+.si-btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+/* Variants */
+.si-btn.primary {
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: white;
+}
+
+.si-btn.success {
+  background: #16a34a;
+  color: white;
+}
+
+.si-btn.danger {
+  background: #ef4444;
+  color: white;
+}
+
+.si-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+/* Empty */
+.si-empty {
+  padding: 25px;
+  background: #111827;
+  border-radius: 12px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+/* Loading */
+.si-loading {
+  padding: 30px;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .si-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}

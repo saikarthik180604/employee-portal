@@ -1,0 +1,191 @@
+/* ===== 1. Main Container ===== */
+.admin-attendance-container {
+  padding: 24px;
+  background: transparent;
+  border-radius: 12px;
+  font-family: "Segoe UI", sans-serif;
+  color: #ffffff; /* White text for dark mode */
+}
+
+.attendance-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+/* ===== 2. Summary Cards ===== */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.card h3 {
+  margin-top: 8px;
+  font-size: 24px;
+}
+
+.card.present { background: linear-gradient(135deg, #1d976c, #11998e); }
+.card.absent { background: linear-gradient(135deg, #eb3349, #f45c43); }
+.card.hours { background: linear-gradient(135deg, #00c6ff, #0072ff); }
+
+/* Updated Late Card: Yellow -> Deep Orange Gradient */
+.card.late { background: linear-gradient(135deg, #f37335, #fdc830); }
+
+/* ===== 3. Filters ===== */
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filters input,
+.filters select {
+  padding: 10px 14px;
+  background: #252525;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #fff;
+}
+
+.filter-btn {
+  background: #0095ff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* ===== 4. Table Styling ===== */
+.attendance-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  margin-top: 20px;
+}
+
+.attendance-table th {
+  background: #0095ff;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 15px;
+  font-size: 13px;
+}
+
+.attendance-table td {
+  padding: 15px;
+  text-align: center;
+  color: #e0e0e0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.attendance-table tr:hover td {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== 5. Badges ===== */
+.badge {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.badge.present { background: #28a745; }
+.badge.absent { background: #dc3545; }
+
+/* Updated Late Badge: Solid Orange with high readability */
+.badge.late { 
+  background: #f59e0b; 
+  color: #000; 
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+/* ===== 6. Calendar Section ===== */
+.calendar-report-section {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.react-calendar {
+    width: 100% !important;
+    background-color: #1a1a1a !important;
+    color: white !important;
+    border: 1px solid #444 !important;
+    border-radius: 8px;
+}
+
+.react-calendar__tile {
+    color: white !important;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+    background-color: #333 !important;
+}
+
+.react-calendar__navigation button {
+    color: white !important;
+}
+
+/* Calendar Tile Colors */
+.tile-present { background: #2ecc71 !important; color: white !important; }
+.tile-absent { background: #e74c3c !important; color: white !important; }
+.tile-permission { background: #3498db !important; color: white !important; }
+
+/* Updated Calendar Late Tile: Deep Orange */
+.tile-late { 
+  background: #fb923c !important; 
+  color: black !important; 
+  font-weight: bold;
+}
+
+/* ===== 7. Extras & Buttons ===== */
+.legend-box p {
+    color: #ccc;
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+.edit-btn, .manual-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.edit-btn { background: #007bff; color: #fff; }
+.manual-btn { background: #495057; color: #fff; }
+
+.export-btn {
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.export-btn:hover {
+  background: #444;
+}

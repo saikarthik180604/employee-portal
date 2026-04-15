@@ -1,0 +1,140 @@
+/* Container */
+.wp-container {
+  padding: 30px;
+  background: linear-gradient(135deg, #0f172a, #020617);
+  min-height: 100vh;
+  color: #e2e8f0;
+  font-family: "Inter", sans-serif;
+}
+
+/* Header */
+.wp-header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  background: linear-gradient(to right, #38bdf8, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.wp-header p {
+  color: #94a3b8;
+  margin-top: 5px;
+}
+
+/* Grid */
+.wp-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+  margin-top: 25px;
+}
+
+/* Card */
+.wp-card {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Input */
+.wp-input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #020617;
+  color: white;
+  outline: none;
+  transition: 0.3s;
+}
+
+.wp-input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+}
+
+/* Button */
+.wp-button {
+  margin-top: 15px;
+  padding: 12px;
+  width: 100%;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.wp-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+}
+
+/* Job List */
+.wp-job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+/* Job Card */
+.wp-job-card {
+  padding: 15px;
+  border-radius: 12px;
+  background: #020617;
+  border: 1px solid #1e293b;
+  transition: 0.3s;
+}
+
+.wp-job-card:hover {
+  transform: scale(1.02);
+  border-color: #38bdf8;
+}
+
+/* Top Row */
+.wp-job-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Title */
+.wp-job-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* Badge */
+.wp-badge {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+}
+
+/* Date */
+.wp-job-date {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Muted */
+.wp-muted {
+  color: #64748b;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .wp-grid {
+    grid-template-columns: 1fr;
+  }
+}
